@@ -1,5 +1,6 @@
 #pragma once
-
+#include <iostream>
+using namespace std;
 namespace Cryptography {
 
 	using namespace System;
@@ -9,24 +10,21 @@ namespace Cryptography {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	/// <summary>
-	/// Summary for MyForm
-	/// </summary>
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 		public:
 			MyForm(void)
 			{
 				InitializeComponent();
-				//
-				//TODO: Add the constructor code here
-				//
 			}
+			int cipher_algo = 0; //Shift=1, Viginere=2, Playfair=3
+			const char *plain_text="";
+	private: System::Windows::Forms::TextBox^ key;
+	private: System::Windows::Forms::Label^ keylabel;
+	public:
 
+		   const char* cipher_text = "";
 		protected:
-			/// <summary>
-			/// Clean up any resources being used.
-			/// </summary>
 			~MyForm()
 			{
 				if (components)
@@ -34,16 +32,17 @@ namespace Cryptography {
 					delete components;
 				}
 			}
-
-
-
 		protected:
 
 		protected:
 
 
 
-
+		private: void refresh() {
+			CT->Text = "";
+			PlainText->Text = "";
+			this->cipher_text = "";
+		}
 
 		private: System::Windows::Forms::Splitter^ splitter2;
 
@@ -60,35 +59,15 @@ namespace Cryptography {
 
 		private: System::Windows::Forms::Label^ label2;
 		private: System::Windows::Forms::TextBox^ CT;
-	private: System::Windows::Forms::Button^ decryptbutton;
+		private: System::Windows::Forms::Button^ decryptbutton;
+		private: System::Windows::Forms::TextBox^ PlainText;
 
-			   //private: System::Windows::Forms::Button^ decrypt;
-		private: System::Windows::Forms::TextBox^ PlainText2;
+
 
 		private: System::Windows::Forms::Label^ label3;
-		//private: System::Windows::Forms::Button^ encryptbtn;
-		   //private: System::Windows::Forms::Button^ decrypt;
-				  //private: System::Windows::Forms::Button^ decrypt;
+		private: System::ComponentModel::Container^ components;
 
-
-
-
-
-
-
-
-
-		private:
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-			System::ComponentModel::Container^ components;
-
-#pragma region Windows Form Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
+		#pragma region Windows Form Designer generated code
 		void InitializeComponent(void)
 		{
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
@@ -104,8 +83,10 @@ namespace Cryptography {
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->CT = (gcnew System::Windows::Forms::TextBox());
 			this->decryptbutton = (gcnew System::Windows::Forms::Button());
-			this->PlainText2 = (gcnew System::Windows::Forms::TextBox());
+			this->PlainText = (gcnew System::Windows::Forms::TextBox());
 			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->key = (gcnew System::Windows::Forms::TextBox());
+			this->keylabel = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -141,7 +122,6 @@ namespace Cryptography {
 			this->label1->Size = System::Drawing::Size(163, 24);
 			this->label1->TabIndex = 11;
 			this->label1->Text = L"Select Algorithm";
-			this->label1->Click += gcnew System::EventHandler(this, &MyForm::label1_Click_2);
 			// 
 			// playfair
 			// 
@@ -155,6 +135,7 @@ namespace Cryptography {
 			this->playfair->TabStop = true;
 			this->playfair->Text = L"Playfair Cipher";
 			this->playfair->UseVisualStyleBackColor = true;
+			this->playfair->Click += gcnew System::EventHandler(this, &MyForm::playfaircipher);
 			// 
 			// shift
 			// 
@@ -182,6 +163,7 @@ namespace Cryptography {
 			this->viginere->TabStop = true;
 			this->viginere->Text = L"Viginere Cipher";
 			this->viginere->UseVisualStyleBackColor = true;
+			this->viginere->Click += gcnew System::EventHandler(this, &MyForm::viginerecipher);
 			// 
 			// PT
 			// 
@@ -191,7 +173,7 @@ namespace Cryptography {
 			this->PT->Name = L"PT";
 			this->PT->Size = System::Drawing::Size(168, 24);
 			this->PT->TabIndex = 15;
-			this->PT->TextChanged += gcnew System::EventHandler(this, &MyForm::enterTextChanged);
+			this->PT->TextChanged += gcnew System::EventHandler(this, &MyForm::text_changed);
 			// 
 			// textlabel
 			// 
@@ -203,7 +185,6 @@ namespace Cryptography {
 			this->textlabel->Size = System::Drawing::Size(71, 16);
 			this->textlabel->TabIndex = 16;
 			this->textlabel->Text = L"Enter Text:";
-			this->textlabel->Click += gcnew System::EventHandler(this, &MyForm::textlabel_Click);
 			// 
 			// encryptbtn
 			// 
@@ -249,14 +230,14 @@ namespace Cryptography {
 			this->decryptbutton->UseVisualStyleBackColor = true;
 			this->decryptbutton->Click += gcnew System::EventHandler(this, &MyForm::decrypt);
 			// 
-			// PlainText2
+			// PlainText
 			// 
-			this->PlainText2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->PlainText->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->PlainText2->Location = System::Drawing::Point(272, 299);
-			this->PlainText2->Name = L"PlainText2";
-			this->PlainText2->Size = System::Drawing::Size(165, 24);
-			this->PlainText2->TabIndex = 22;
+			this->PlainText->Location = System::Drawing::Point(272, 299);
+			this->PlainText->Name = L"PlainText";
+			this->PlainText->Size = System::Drawing::Size(165, 24);
+			this->PlainText->TabIndex = 22;
 			// 
 			// label3
 			// 
@@ -268,7 +249,28 @@ namespace Cryptography {
 			this->label3->Size = System::Drawing::Size(70, 16);
 			this->label3->TabIndex = 21;
 			this->label3->Text = L"Plain Text:";
-			this->label3->Click += gcnew System::EventHandler(this, &MyForm::label3_Click);
+			// 
+			// key
+			// 
+			this->key->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->key->Location = System::Drawing::Point(469, 48);
+			this->key->Name = L"key";
+			this->key->Size = System::Drawing::Size(111, 24);
+			this->key->TabIndex = 23;
+			this->key->Visible = false;
+			// 
+			// keylabel
+			// 
+			this->keylabel->AutoSize = true;
+			this->keylabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->keylabel->Location = System::Drawing::Point(466, 19);
+			this->keylabel->Name = L"keylabel";
+			this->keylabel->Size = System::Drawing::Size(34, 16);
+			this->keylabel->TabIndex = 24;
+			this->keylabel->Text = L"Key:";
+			this->keylabel->Visible = false;
 			// 
 			// MyForm
 			// 
@@ -276,7 +278,9 @@ namespace Cryptography {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::SystemColors::AppWorkspace;
 			this->ClientSize = System::Drawing::Size(689, 418);
-			this->Controls->Add(this->PlainText2);
+			this->Controls->Add(this->keylabel);
+			this->Controls->Add(this->key);
+			this->Controls->Add(this->PlainText);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->decryptbutton);
 			this->Controls->Add(this->CT);
@@ -298,37 +302,43 @@ namespace Cryptography {
 			this->PerformLayout();
 
 		}
-#pragma endregion
-	private: System::Void radioButton3_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-	}
-	private: System::Void radioButton1_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-	}
-	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
-	}
-	private: System::Void decrypt(System::Object^ sender, System::EventArgs^ e) {
-		PlainText2->Text = e->ToString();
-	}
-	private: System::Void label1_Click_1(System::Object^ sender, System::EventArgs^ e) {
-	}
-	private: System::Void groupBox1_Enter(System::Object^ sender, System::EventArgs^ e) {
-	}
-	private: System::Void label1_Click_2(System::Object^ sender, System::EventArgs^ e) {
-	}
-	private: System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
-	}
-	private: System::Void textlabel_Click(System::Object^ sender, System::EventArgs^ e) {
-	}
-	private: System::Void encrypt(System::Object^ sender, System::EventArgs^ e) {
-		CT->Text = "Pakistan";
+		#pragma endregion
+		private: System::Void encrypt(System::Object^ sender, System::EventArgs^ e) {
+			if (this->cipher_algo == 1) {  //shift cipher 
+				key->Text = "this->plain_text";
+				
+			}
+			else if (this->cipher_algo == 2) {  //viginere cipher
 
-	}
-	private: System::Void label3_Click(System::Object^ sender, System::EventArgs^ e) {
-	}
-	private: System::Void shiftcipher(System::Object^ sender, System::EventArgs^ e) {
-	}
-	
-private: System::Void enterTextChanged(System::Object^ sender, System::EventArgs^ e) {
-}
+			}
+			else if (this->cipher_algo == 3) {  //playfair cipher
 
+			}
+			CT->Text = PT->Text;
+		}
+		private: System::Void decrypt(System::Object^ sender, System::EventArgs^ e) {
+			PlainText->Text = e->ToString();
+		}
+		private: System::Void shiftcipher(System::Object^ sender, System::EventArgs^ e) {
+			this->cipher_algo = 1;
+			key->Visible = true;
+			keylabel->Visible = true;
+			this->refresh();
+		}
+		private: System::Void viginerecipher(System::Object^ sender, System::EventArgs^ e) {
+			this->cipher_algo = 2;
+			key->Visible = false;
+			keylabel->Visible = false;
+			this->refresh();
+		}
+		private: System::Void playfaircipher(System::Object^ sender, System::EventArgs^ e) {
+			this->cipher_algo = 3;
+			key->Visible = false;
+			keylabel->Visible = false;
+			this->refresh();
+		}
+		private: System::Void text_changed(System::Object^ sender, System::EventArgs^ e) {
+			this->plain_text =( const char ) e->ToString();
+		}
 };
 }

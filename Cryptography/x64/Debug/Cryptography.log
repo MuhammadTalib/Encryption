@@ -1,3 +1,4 @@
 ﻿  MyForm.cpp
-  MyForm.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
-  Cryptography.vcxproj -> D:\Cryptography\x64\Debug\Cryptography.exe
+D:\Cryptography\Cryptography\MyForm.h(341,1): error C2440: '=': cannot convert from 'System::String ^' to 'const char *'
+D:\Cryptography\Cryptography\MyForm.h(341,1): message : No user-defined-conversion operator available, or
+D:\Cryptography\Cryptography\MyForm.h(341,34): message : Cannot convert a managed type to a native type
